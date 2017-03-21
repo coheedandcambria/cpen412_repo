@@ -32,14 +32,14 @@ void IIC_WriteByte(void){
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -56,19 +56,19 @@ void IIC_WriteByte(void){
 
     // specify the internal address
     // by writing each byte of the addr to the transmit reg
-    IICPtr[0x03 << 1] = 0x00;
+    IICPtr[0x03 << 1] = 0x00; // may need to update to be based on user input address
     IICPtr[0x04 << 1] = 0x11; // set WR, IACK
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -84,19 +84,19 @@ void IIC_WriteByte(void){
     }
 
     // second byte of addr
-    IICPtr[0x03 << 1] = 0x00;
+    IICPtr[0x03 << 1] = 0x00; // may need to update to be based on user input address
     IICPtr[0x04 << 1] = 0x11; // set WR, IACK
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -113,19 +113,19 @@ void IIC_WriteByte(void){
 
 
     // write data to transmit reg
-    IICPtr[0x03 << 1] = 0x55;
-    IICPtr[0x04 << 1] = 0x51;
+    IICPtr[0x03 << 1] = 0x55; // Data written to memory address location
+    IICPtr[0x04 << 1] = 0x51; //STO, WR, IACK
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 }
 
@@ -153,14 +153,14 @@ void IIC_WriteBytes(void){
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -182,14 +182,14 @@ void IIC_WriteBytes(void){
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -210,14 +210,14 @@ void IIC_WriteBytes(void){
 
     // check ack
     sr = IICPtr[0x04 << 1];
-    mask = 1 << 1;
+    mask = 1 << 7;
     masked_n = sr & mask;
-    ack_bit = masked_n >> 1;
+    ack_bit = masked_n >> 7;
 
     while(ack_bit != 0){
         sr = IICPtr[0x04 << 1];
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
     }
 
     // check tip flag
@@ -244,14 +244,14 @@ void IIC_WriteBytes(void){
 
         // check ack (done in every iteration of loop)
         sr = IICPtr[0x04 << 1];
-        mask = 1 << 1;
+        mask = 1 << 7;
         masked_n = sr & mask;
-        ack_bit = masked_n >> 1;
+        ack_bit = masked_n >> 7;
 
         while(ack_bit != 0){
             sr = IICPtr[0x04 << 1];
             masked_n = sr & mask;
-            ack_bit = masked_n >> 1;
+            ack_bit = masked_n >> 7;
         }
 
         // if not on the last iteration, check tip
