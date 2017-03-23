@@ -25,8 +25,10 @@ int main (void)
       z = getchar() ;
       
       if( z == 0x61 )
+        printf( "\r\nRead Byte Selected" ) ;
         // Call Read Byte function here
       else if( z == 0x62 )
+        printf( "\r\nRead Page Selected" ) ;
         // Call Read Page function here
       else if( z == 0x63 )  {
         printf( "Select Starting Address" ) ;
