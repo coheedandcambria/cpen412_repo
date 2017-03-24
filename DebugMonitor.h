@@ -138,6 +138,8 @@ void FlashReset(void);
 void IIC_initialize(void);
 void IIC_WriteByte(void);
 void IIC_WriteBytes(void);
+void IIC_ReadByte(void);
+void IIC_ReadBytes(void);
 
 // other prototypes
 void Init_RS232(void) ;
