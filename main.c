@@ -6,7 +6,7 @@ int main (void)
   
   IIC_initialize() ;
   
-  printf( "\r\nSelect Device: (a)ADC (b)EEPROM" ) ;
+  printf( "\r\nSelect Device: (a)ADC (b)EEPROM\r\n" ) ;
   x = getchar() ;
   
   if( x == 0x61 )  {
@@ -16,24 +16,26 @@ int main (void)
   }
   else if( x == 0x62 )  {
     printf( "\r\nEEPROM Selected" ) ;
-    printf( "\r\nSelect Mode: (a)Read (b)Write" ) ;
+    printf( "\r\nSelect Mode: (a)Read (b)Write\r\n" ) ;
     y = getchar() ;
     
     if( y == 0x61 )  {
       printf( "\r\nRead Selected" ) ;
-      printf( "\r\nSelect Test: (a)Read Byte (b)Read Page (c)Read Other" ) ;
+      printf( "\r\nSelect Test: (a)Read Byte (b)Read Page (c)Read Other\r\n" ) ;
       z = getchar() ;
       
-      if( z == 0x61 )
+      if( z == 0x61 ) {
         printf( "\r\nRead Byte Selected" ) ;
-        // Call Read Byte function here
-      else if( z == 0x62 )
+        IIC_ReadByte() ;
+      }
+      else if( z == 0x62 )  {
         printf( "\r\nRead Page Selected" ) ;
-        // Call Read Page function here
+        IIC_ReadBytes() ;
+      }
       else if( z == 0x63 )  {
-        printf( "Select Starting Address" ) ;
+        printf( "\r\nSelect Starting Address\r\n" ) ;
         start = Get8HexDigits(0) ;
-        printf( "Select number of bytes to read in hex" ) ;
+        printf( "\r\nSelect number of bytes to read in hex\r\n" ) ;
         bytes = Get8HexDigits(0) ; // Needs a better solution
         // Call Read Other function and send "start" and "bytes" parameters
       }  
@@ -42,17 +44,21 @@ int main (void)
     }
     else if( y == 0x62 )  {
       printf( "\r\nWrite Selected" ) ;
-      printf( "\r\nSelect Test: (a)Write Byte (b)Write Page (c)Write Other" ) ;
+      printf( "\r\nSelect Test: (a)Write Byte (b)Write Page (c)Write Other\r\n" ) ;
       z = getchar() ;
       
-      if( z == 0x61 )
+      if( z == 0x61 ) {
+        printf( "\r\nWrite Byte Selected" ) ;
         IIC_WriteByte() ;
-      else if( z == 0x62 )
+      }
+      else if( z == 0x62 )  {
+        printf( "\r\nWrite Page Selected" ) ;
         IIC_WriteBytes() ;
+      }
       else if( z == 0x63 )  {
-        printf( "Select Starting Address" ) ;
+        printf( "\r\nSelect Starting Address\r\n" ) ;
         start = Get8HexDigits(0) ;
-        printf( "Select number of bytes to write in hex" ) ;
+        printf( "\r\nSelect number of bytes to write in hex\r\n" ) ;
         bytes = Get8HexDigits(0) ; // Needs a better solution
         // Call Write Other function and send "start" and "bytes" parameters
       }
