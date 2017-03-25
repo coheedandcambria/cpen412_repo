@@ -97,11 +97,6 @@ void LCDline1Message(char *theMessage);
 void LCDline2Message(char *theMessage);
 int sprintf(char *out, const char *format, ...) ;
 
-//Function prototypes for IIC
-void IICController(void);
-void IIC_initialize(void);
-void IIC_WriteByte(void);
-void IIC_WriteBytes(void);
 /*****************************************************************************************
 **	Interrupt service routine for Timers
 **
