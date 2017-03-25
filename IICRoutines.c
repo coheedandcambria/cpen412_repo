@@ -353,6 +353,11 @@ void IIC_ReadBytes(void){
     }
 }
 
+void IIC_UserRead(unsigned long start, unsigned long bytes)
+{
+    printf( "Download 'IIC_UserRead.c' file on main page of github and copy/paste here" );
+}
+
 void IIC_WriteByte(void){
     int sr;
     int mask, masked_n, tip_bit, ack_bit;
@@ -978,10 +983,10 @@ void IIC_UserWrite(unsigned long start, unsigned long bytes)
             tip_bit = masked_n >> 1;
         }
 
-        for(i = 0; i < w2; i++){
+        while( w2 > 0 ) {
             IICPtr[0x03 << 1] = 0x55; //write data
             // if last iteration, need to set sto bit
-            if(i == w2){
+            if(w2 == 1){
                 IICPtr[0x04 << 1] = 0x51;
             }
             else{
@@ -1001,7 +1006,7 @@ void IIC_UserWrite(unsigned long start, unsigned long bytes)
             }
 
             // if not on the last iteration, check tip
-            if(i < w2){
+            if(w2 > 1){
                 sr = IICPtr[0x04 << 1];
                 mask = 1 << 1;
                 masked_n = sr & mask;
@@ -1014,6 +1019,7 @@ void IIC_UserWrite(unsigned long start, unsigned long bytes)
                 }
             }
 
+            w2-- ;
             count++;
             bytesLeft--;
         }
@@ -1024,7 +1030,6 @@ void IIC_UserWrite(unsigned long start, unsigned long bytes)
         break;
     }
 }
-
 
 
 
