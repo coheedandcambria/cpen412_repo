@@ -97,6 +97,8 @@ void LCDline1Message(char *theMessage);
 void LCDline2Message(char *theMessage);
 int sprintf(char *out, const char *format, ...) ;
 
+void IICController(void);
+
 /*****************************************************************************************
 **	Interrupt service routine for Timers
 **

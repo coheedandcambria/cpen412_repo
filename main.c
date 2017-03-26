@@ -13,10 +13,15 @@ void IIC_ReadByte(void);
 void IIC_ReadBytes(void) ;
 void IIC_UserRead( unsigned long start, unsigned long bytes );
 
+long Get8HexDigits(char *CheckSumPtr);
+long Get4HexDigits(char *CheckSumPtr);
+long Get2HexDigits(char *CheckSumPtr);
+char xtod(long c);
+
 void IICController (void)
 {
   char x, y, z ;
-  unsigned long start, bytes ;
+  unsigned long start, bytes;
 
   IIC_initialize() ;
 
@@ -51,7 +56,7 @@ void IICController (void)
         scanf( "%.4x", &start ) ;
         printf( "Select number of bytes to read" ) ;
         scanf( "%d", &bytes ) ; // Needs a better solution
-        printf( "Address %.4x   Bytes %d", start, bytes );
+        //printf( "Address %.4x   Bytes %d", start, bytes );
         IIC_UserRead( start, bytes );
       }
       else
@@ -67,12 +72,12 @@ void IICController (void)
       else if( z == 0x62 )
         IIC_WriteBytes() ;
       else if( z == 0x63 )  {
-        printf( "Select Starting Address" ) ;
-        scanf( "%.4x", &start ) ;
-        printf( "Select number of bytes to write in hex" ) ;
-        scanf( "%d", &bytes ) ; // Needs a better solution
+        printf( "\r\nSelect Starting Address\r\n" ) ;
+        start = Get8HexDigits(0);
+        printf( "\r\nSelect number of bytes to write in hex" ) ;
+        scanf( "\r\n%d", &bytes ) ;
 
-        printf( "Address %.4x   Bytes %d", start, bytes );
+        printf( "\r\nAddress %.4x   Bytes %d", start, bytes );
         IIC_UserWrite( start, bytes );
       }
       else
@@ -83,4 +88,39 @@ void IICController (void)
   }
   else
     printf( "\r\nError, your input was: %c", x ) ;
+}
+
+char xtod(long c)
+{
+    if ((char)(c) <= (char)('9'))
+        return c - (char)(0x30);    // 0 - 9 = 0x30 - 0x39 so convert to number by sutracting 0x30
+    else if((char)(c) > (char)('F'))    // assume lower case
+        return c - (char)(0x57);    // a-f = 0x61-66 so needs to be converted to 0x0A - 0x0F so subtract 0x57
+    else
+        return c - (char)(0x37);    // A-F = 0x41-46 so needs to be converted to 0x0A - 0x0F so subtract 0x37
+}
+
+long Get2HexDigits(char *CheckSumPtr)
+{
+    register long i = (xtod(_getch()) << 4) | (xtod(_getch()));
+
+    if(CheckSumPtr)
+        *CheckSumPtr += i ;
+
+    return i ;
+}
+
+long Get4HexDigits(char *CheckSumPtr)
+{
+    return (Get2HexDigits(CheckSumPtr) << 8) | (Get2HexDigits(CheckSumPtr));
+}
+
+long Get6HexDigits(char *CheckSumPtr)
+{
+    return (Get4HexDigits(CheckSumPtr) << 8) | (Get2HexDigits(CheckSumPtr));
+}
+
+long Get8HexDigits(char *CheckSumPtr)
+{
+    return (Get4HexDigits(CheckSumPtr) << 16) | (Get4HexDigits(CheckSumPtr));
 }
