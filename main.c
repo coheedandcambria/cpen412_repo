@@ -8,20 +8,24 @@
 void IIC_initialize(void);
 void IIC_WriteByte(void);
 void IIC_WriteBytes(void);
-void IIC_UserWrite( unsigned long start, unsigned long bytes );
+void IIC_UserWrite( unsigned int start, unsigned int bytes );
 void IIC_ReadByte(void);
 void IIC_ReadBytes(void) ;
-void IIC_UserRead( unsigned long start, unsigned long bytes );
+void IIC_UserRead( unsigned int start, unsigned int bytes );
+
+void ReadADC(void);
 
 long Get8HexDigits(char *CheckSumPtr);
+long Get6HexDigits(char *CheckSumPtr);
 long Get4HexDigits(char *CheckSumPtr);
 long Get2HexDigits(char *CheckSumPtr);
 char xtod(long c);
+char character(void);
 
 void IICController (void)
 {
   char x, y, z ;
-  unsigned long start, bytes;
+  unsigned int start, bytes, OffsetUpper, OffsetLower;
 
   IIC_initialize() ;
 
@@ -52,11 +56,14 @@ void IICController (void)
         IIC_ReadBytes();
        }
       else if( z == 0x63 )  {
-        printf( "Select Starting Address in hex" ) ;
-        scanf( "%.4x", &start ) ;
-        printf( "Select number of bytes to read" ) ;
-        scanf( "%d", &bytes ) ; // Needs a better solution
-        //printf( "Address %.4x   Bytes %d", start, bytes );
+        printf( "\r\nSelect Starting Address in 6 digit hex\r\n" ) ;
+        start = Get6HexDigits(0);
+        OffsetUpper = start >> 8 ;
+        OffsetLower = start & 0x00ff ;
+        printf( "Reassembled address: %.4x   %.4x", OffsetUpper, OffsetLower );
+        printf( "\r\nSelect number of bytes to write in hex\r\n" ) ;
+        bytes = Get6HexDigits(0);
+        printf( "Address %.4x   Bytes %d\r\n", start, bytes );
         IIC_UserRead( start, bytes );
       }
       else
@@ -72,12 +79,12 @@ void IICController (void)
       else if( z == 0x62 )
         IIC_WriteBytes() ;
       else if( z == 0x63 )  {
-        printf( "\r\nSelect Starting Address\r\n" ) ;
-        start = Get8HexDigits(0);
-        printf( "\r\nSelect number of bytes to write in hex" ) ;
-        scanf( "\r\n%d", &bytes ) ;
+        printf( "\r\nSelect Starting Address in 6 digit hex\r\n" ) ;
+        start = Get6HexDigits(0);
+        printf( "\r\nSelect number of bytes to write in hex\r\n" ) ;
+        bytes = Get6HexDigits(0);
 
-        printf( "\r\nAddress %.4x   Bytes %d", start, bytes );
+        printf( "\r\nAddress %.4x   Bytes %d\r\n", start, bytes );
         IIC_UserWrite( start, bytes );
       }
       else
@@ -100,9 +107,16 @@ char xtod(long c)
         return c - (char)(0x37);    // A-F = 0x41-46 so needs to be converted to 0x0A - 0x0F so subtract 0x37
 }
 
+char character(void)
+{
+    char ch = _getch();
+    printf("%c", ch);
+    return ch;
+}
+
 long Get2HexDigits(char *CheckSumPtr)
 {
-    register long i = (xtod(_getch()) << 4) | (xtod(_getch()));
+    register long i = (xtod(character()) << 4) | (xtod(character()));
 
     if(CheckSumPtr)
         *CheckSumPtr += i ;
