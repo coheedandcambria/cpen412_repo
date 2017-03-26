@@ -84,7 +84,7 @@ void ADC_Write(void){
             IICPtr[0x04 << 1] = 0x11;
         }*/
 				
-				IICPtr[0x04 << 1] = 0x11;
+	IICPtr[0x04 << 1] = 0x11;
 
         // check ack (done in every iteration of loop)
         sr = IICPtr[0x04 << 1];
@@ -98,19 +98,17 @@ void ADC_Write(void){
             ack_bit = masked_n >> 7;
         }
 
-        // if not on the last iteration, check tip
-        /*if(i < 127){
-            sr = IICPtr[0x04 << 1];
-            mask = 1 << 1;
-            masked_n = sr & mask;
-            tip_bit = masked_n >> 1;
+        // check tip
+	sr = IICPtr[0x04 << 1];
+	mask = 1 << 1;
+	masked_n = sr & mask;
+	tip_bit = masked_n >> 1;
 
-            while(tip_bit != 0){
-                sr = IICPtr[0x04 << 1];
-                masked_n = sr & mask;
-                tip_bit = masked_n >> 1;
-            }
-        }*/
+	while(tip_bit != 0){
+	sr = IICPtr[0x04 << 1];
+	masked_n = sr & mask;
+	tip_bit = masked_n >> 1;
+	}
     }
 }
     
