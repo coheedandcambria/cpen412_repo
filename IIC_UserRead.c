@@ -7,6 +7,7 @@ void IIC_UserRead(unsigned long start, unsigned long bytes)
 {
     unsigned long count, bytesLeft, w, w2, OffsetUpper, OffsetLower;
     int x, flag, w1;
+	unsigned int value;
 
     int i;
     int sr;
