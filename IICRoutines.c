@@ -1122,6 +1122,7 @@ void IIC_UserWrite(unsigned int start, unsigned int bytes)
 
     int i;
     int sr;
+		int rem, rem_1, rem_bytes;
     int mask, masked_n, tip_bit, ack_bit;
     unsigned char *IICPtr = (unsigned char *)(IICStart);
 
@@ -1144,11 +1145,207 @@ void IIC_UserWrite(unsigned int start, unsigned int bytes)
             x = 0 ;
         }
 
-        w = bytesLeft ;
+        				
+				rem_bytes = count % 128;
+				rem = 128-rem_bytes;
+				rem_1 = rem;
+
+				while( rem_1 > 0 )
+        {
+            if( (MAX_BANKSPACE - count) < PAGE )
+						{
+								flag = 1 ;
+								break ;
+						}
+					
+						if( x == 1 )
+            {
+                //Write Slave Address 1010100
+                // check if TIP flag is negated
+                sr = IICPtr[0x04 << 1];
+                mask = 1 << 1;
+                masked_n = sr & mask;
+                tip_bit = masked_n >> 1;
+
+                while(tip_bit != 0){
+                    sr = IICPtr[0x04 << 1];
+                    masked_n = sr & mask;
+                    tip_bit = masked_n >> 1;
+                }
+
+                // Writing to the transmit reg
+                IICPtr[0x03 << 1] = 0xA8;
+                IICPtr[0x04 << 1] = 0x91;
+
+                // check ack
+                sr = IICPtr[0x04 << 1];
+                mask = 1 << 7;
+                masked_n = sr & mask;
+                ack_bit = masked_n >> 7;
+
+                while(ack_bit != 0){
+                    sr = IICPtr[0x04 << 1];
+                    masked_n = sr & mask;
+                    ack_bit = masked_n >> 7;
+                }
+            }
+            else
+            {
+                //Write Slave Address 1010000
+                // check if TIP flag is negated
+                sr = IICPtr[0x04 << 1];
+                mask = 1 << 1;
+                masked_n = sr & mask;
+                tip_bit = masked_n >> 1;
+
+                while(tip_bit != 0){
+                    sr = IICPtr[0x04 << 1];
+                    masked_n = sr & mask;
+                    tip_bit = masked_n >> 1;
+                }
+
+                // Writing to the transmit reg
+                IICPtr[0x03 << 1] = 0xA0;
+                IICPtr[0x04 << 1] = 0x91;
+
+                // check ack
+                sr = IICPtr[0x04 << 1];
+                mask = 1 << 7;
+                masked_n = sr & mask;
+                ack_bit = masked_n >> 7;
+
+                while(ack_bit != 0){
+                    sr = IICPtr[0x04 << 1];
+                    masked_n = sr & mask;
+                    ack_bit = masked_n >> 7;
+                }
+            }
+
+            // check tip flag
+            sr = IICPtr[0x04 << 1];
+            mask = 1 << 1;
+            masked_n = sr & mask;
+            tip_bit = masked_n >> 1;
+
+            while(tip_bit != 0){
+                sr = IICPtr[0x04 << 1];
+                masked_n = sr & mask;
+                tip_bit = masked_n >> 1;
+            }
+
+            //Specify internal address upper byte based on count
+            OffsetUpper = count >> 8 ;
+
+            // specify the internal address
+            // by writing each byte of the addr to the transmit reg
+            IICPtr[0x03 << 1] = OffsetUpper;
+            IICPtr[0x04 << 1] = 0x11; // set WR, IACK
+
+            // check ack
+            sr = IICPtr[0x04 << 1];
+            mask = 1 << 7;
+            masked_n = sr & mask;
+            ack_bit = masked_n >> 7;
+
+            while(ack_bit != 0){
+                sr = IICPtr[0x04 << 1];
+                masked_n = sr & mask;
+                ack_bit = masked_n >> 7;
+            }
+
+            // check tip flag
+            sr = IICPtr[0x04 << 1];
+            mask = 1 << 1;
+            masked_n = sr & mask;
+            tip_bit = masked_n >> 1;
+
+            while(tip_bit != 0){
+                sr = IICPtr[0x04 << 1];
+                masked_n = sr & mask;
+                tip_bit = masked_n >> 1;
+            }
+
+            //Specify internal address upper byte based on count
+            OffsetLower = count & 0x00ff ;
+
+            // second byte of addr
+            IICPtr[0x03 << 1] = OffsetLower;
+            IICPtr[0x04 << 1] = 0x11; // set WR, IACK
+
+            // check ack
+            sr = IICPtr[0x04 << 1];
+            mask = 1 << 7;
+            masked_n = sr & mask;
+            ack_bit = masked_n >> 7;
+
+            while(ack_bit != 0){
+                sr = IICPtr[0x04 << 1];
+                masked_n = sr & mask;
+                ack_bit = masked_n >> 7;
+            }
+
+            // check tip flag
+            sr = IICPtr[0x04 << 1];
+            mask = 1 << 1;
+            masked_n = sr & mask;
+            tip_bit = masked_n >> 1;
+
+            while(tip_bit != 0){
+                sr = IICPtr[0x04 << 1];
+                masked_n = sr & mask;
+                tip_bit = masked_n >> 1;
+            }
+        
+						while( rem > 0 ) {
+							IICPtr[0x03 << 1] = 0x11; //write data
+							// if last iteration, need to set sto bit
+							if(rem == 1){
+									IICPtr[0x04 << 1] = 0x51;
+							}
+							else{
+									IICPtr[0x04 << 1] = 0x11;
+							}
+
+							// check ack (done in every iteration of loop)
+							sr = IICPtr[0x04 << 1];
+							mask = 1 << 7;
+							masked_n = sr & mask;
+							ack_bit = masked_n >> 7;
+
+							while(ack_bit != 0){
+									sr = IICPtr[0x04 << 1];
+									masked_n = sr & mask;
+									ack_bit = masked_n >> 7;
+							}
+
+							// if not on the last iteration, check tip
+							if(rem > 1){
+									sr = IICPtr[0x04 << 1];
+									mask = 1 << 1;
+									masked_n = sr & mask;
+									tip_bit = masked_n >> 1;
+
+									while(tip_bit != 0){
+											sr = IICPtr[0x04 << 1];
+											masked_n = sr & mask;
+											tip_bit = masked_n >> 1;
+									}
+							}
+
+							rem-- ;
+							count++;
+							bytesLeft--;
+					}
+					break;
+				}
+				
+				// Initialize w, w1, w2 after writing the remainder bits
+				w = bytesLeft ;
 
         w1 = (int) (w / 128) ;   //Set up number of page loops
         w2 =  w % 128 ;   //Set up the remaining loops
-        //Page looping
+	
+				//Page looping
         while( w1 > 0 )
         {
             if( (MAX_BANKSPACE - count) < PAGE )
